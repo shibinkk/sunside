@@ -1,0 +1,117 @@
+/* Ensure the map covers the entire screen */
+#map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Ensure map is behind other content */
+}
+
+/* Style for the search container */
+#search-container {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  width: 300px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+  color: white;
+  border-radius: 10px;
+  z-index: 1000; /* Ensure it appears above the map */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow for elevation */
+  font-family: Arial, sans-serif;
+}
+
+/* Heading style inside the container */
+#search-container h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+/* Paragraph style inside the container */
+#search-container p {
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* Form style */
+#search-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Spacing between inputs */
+}
+
+/* Input fields and select dropdown styles */
+#search-container input,
+#search-container select,
+#search-container button {
+  padding: 10px;
+  border: 1px solid #555;
+  border-radius: 5px;
+  background: #222; /* Dark background for input fields */
+  color: white;
+  font-size: 14px;
+  outline: none; /* Remove default outline */
+}
+
+/* Placeholder text styling */
+#search-container input::placeholder {
+  color: #aaa;
+}
+
+/* Button for current location */
+#current-location {
+  background: #17a2b8; /* Teal color for distinction */
+  color: white;
+  cursor: pointer;
+}
+
+#current-location:hover {
+  background: #138496; /* Darker teal on hover */
+}
+
+/* Submit button styles */
+#search-container button[type="submit"] {
+  background: #28a745; /* Green color for submit button */
+  cursor: pointer;
+}
+
+#search-container button[type="submit"]:hover {
+  background: #218838; /* Darker green on hover */
+}
+
+/* Style for the theme toggle button */
+#theme-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px 20px;
+  background: #222;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 1000; /* Ensure it appears above the map */
+}
+
+#theme-toggle:hover {
+  background: #444; /* Slightly lighter background on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #search-container {
+    width: 90%; /* Make the container smaller on smaller screens */
+    left: 5%; /* Center it horizontally */
+  }
+
+  #theme-toggle {
+    top: 15px;
+    right: 15px;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}

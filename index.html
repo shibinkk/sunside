@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sit In Shade</title>
+  <link rel="stylesheet" href="styles.css">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    crossorigin=""
+  />
+</head>
+<body>
+  <!-- Map container -->
+  <div id="map"></div>
+
+  <!-- Search container -->
+  <div id="search-container">
+    <h1>Sit In Shade</h1>
+    <p>Find Best Seat to Minimize Sun Exposure While Traveling</p>
+    <form>
+      <input type="text" placeholder="Enter Starting Point" id="start-point">
+      <input type="text" placeholder="Enter Destination" id="end-point">
+      <label for="date">Date:</label>
+      <input type="date" id="date">
+      <label for="time">Time:</label>
+      <input type="time" id="time">
+      <button type="button" id="current-location">Use Current Location</button>
+      <select id="timezone">
+        <option value="UTC+5:30">(UTC+5:30)</option>
+        <option value="UTC">UTC</option>
+      </select>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <!-- Theme toggle button -->
+  <button id="theme-toggle">Toggle Theme</button>
+
+  <!-- External Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
