@@ -12,6 +12,8 @@
   />
 </head>
 <body>
+
+  
   <!-- Map container -->
   <div id="map"></div>
 
@@ -35,10 +37,20 @@
     </form>
   </div>
 
+  <div class="search-wrapper">
+    <div class="input-holder">
+        <input type="text" class="search-input" placeholder="Type to search" />
+        <button class="search-icon" onclick="searchToggle(this, event);"><span></span></button>
+    </div>
+    <span class="close" onclick="searchToggle(this, event);"></span>
+</div>
+
   <!-- Theme toggle button -->
   <button id="theme-toggle">Toggle Theme</button>
 
   <!-- External Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
