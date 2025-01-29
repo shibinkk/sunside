@@ -1,30 +1,33 @@
 // Initialize the map
-const map = L.map('map').setView([51.505, -0.09], 13); // Centered at London
+var map = L.map('map').setView([51.505, -0.09], 13);
 
-// Light and dark tile layers
-const lightTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+// Define light and dark tile layers
+var lightLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
 });
 
-const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; <a href="https://carto.com/">CARTO</a>'
+var darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a>'
 });
 
-// Add light tiles by default
-lightTiles.addTo(map);
+// Set default theme to dark
+darkLayer.addTo(map);
 
-// Theme toggle functionality
-const themeToggle = document.getElementById('theme-toggle');
-themeToggle.addEventListener('click', () => {
-  const isDark = document.body.classList.toggle('dark-mode');
-  if (isDark) {
-    map.removeLayer(lightTiles);
-    map.addLayer(darkTiles);
-  } else {
-    map.removeLayer(darkTiles);
-    map.addLayer(lightTiles);
-  }
+// Ensure toggle is checked by default
+const toggle = document.querySelector('.input');
+toggle.checked = true; // Set toggle to dark mode
+
+// Toggle theme on checkbox change
+toggle.addEventListener('change', function () {
+    if (this.checked) {
+        map.removeLayer(lightLayer);
+        map.addLayer(darkLayer);
+    } else {
+        map.removeLayer(darkLayer);
+        map.addLayer(lightLayer);
+    }
 });
+
 
 // Ensure the map is properly resized
 window.addEventListener('resize', () => {

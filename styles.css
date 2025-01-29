@@ -11,139 +11,156 @@
 .search-wrapper {
   position: absolute;
   transform: translate(-50%, -50%);
-  top:4.5%;
-  left:50%;
+  top: 4.5%;
+  left: 50%;
 }
-.search-wrapper.active {}
 
-.search-wrapper .input-holder {    
-  height: 70px;
-  width:70px;
+.search-wrapper .input-holder {
+  height: 50px; /* Reduced from 70px */
+  width: 50px; /* Reduced from 70px */
   overflow: hidden;
-  background: rgba(255,255,255,0);
-  border-radius:6px;
+  background: rgba(255, 255, 255, 0);
+  border-radius: 100px;
   position: relative;
   transition: all 0.3s ease-in-out;
 }
+
 .search-wrapper.active .input-holder {
-  width:450px;
+  width: 450px;
   border-radius: 50px;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   transition: all .5s cubic-bezier(0.000, 0.105, 0.035, 1.570);
 }
+
 .search-wrapper .input-holder .search-input {
-  width:100%;
-  height: 50px;
-  padding:0px 70px 0 20px;
+  width: 100%;
+  height: 40px;
+  padding: 0px 50px 0 20px;
   opacity: 0;
   position: absolute;
-  top:0px;
-  left:0px;
+  top: 0px;
+  left: 0px;
   background: transparent;
   box-sizing: border-box;
-  border:none;
-  outline:none;
-  font-family:"Open Sans", Arial, Verdana;
+  border: none;
+  outline: none;
+  font-family: "Open Sans", Arial, Verdana;
   font-size: 16px;
   font-weight: 400;
   line-height: 20px;
-  color:#FFF;
+  color: #FFF;
   transform: translate(0, 60px);
   transition: all .3s cubic-bezier(0.000, 0.105, 0.035, 1.570);
   transition-delay: 0.3s;
 }
+
 .search-wrapper.active .input-holder .search-input {
   opacity: 1;
   transform: translate(0, 10px);
 }
+
 .search-wrapper .input-holder .search-icon {
-  width:70px;
-  height:70px;
-  border:none;
-  border-radius:6px;
+  width: 50px; /* Reduced from 70px */
+  height: 50px; /* Reduced from 70px */
+  border: none;
+  border-radius: 6px;
   background: #FFF;
-  padding:0px;
-  outline:none;
+  padding: 0px;
+  outline: none;
   position: relative;
   z-index: 2;
-  float:right;
+  float: right;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
 }
+
 .search-wrapper.active .input-holder .search-icon {
-  width: 50px;
-  height:50px;
-  margin: 10px;
+  width: 40px;
+  height: 40px;
+  margin: 5px;
   border-radius: 30px;
 }
+
 .search-wrapper .input-holder .search-icon span {
-  width:22px;
-  height:22px;
+  width: 18px; /* Adjusted to fit smaller button */
+  height: 18px;
   display: inline-block;
   vertical-align: middle;
-  position:relative;
+  position: relative;
   transform: rotate(45deg);
   transition: all .4s cubic-bezier(0.650, -0.600, 0.240, 1.650);
 }
+
 .search-wrapper.active .input-holder .search-icon span {
   transform: rotate(-45deg);
 }
-.search-wrapper .input-holder .search-icon span::before, .search-wrapper .input-holder .search-icon span::after {
-  position: absolute; 
-  content:'';
-}
-.search-wrapper .input-holder .search-icon span::before {
-  width: 4px;
-  height: 11px;
-  left: 9px;
-  top: 18px;
-  border-radius: 2px;
-  background: #FE5F55;
-}
+
+.search-wrapper .input-holder .search-icon span::before,
 .search-wrapper .input-holder .search-icon span::after {
-  width: 14px;
-  height: 14px;
+  position: absolute;
+  content: '';
+}
+
+.search-wrapper .input-holder .search-icon span::before {
+  width: 3px;
+  height: 9px;
+  left: 7px;
+  top: 15px;
+  border-radius: 2px;
+  background: #0e0e0e;
+}
+
+.search-wrapper .input-holder .search-icon span::after {
+  width: 12px;
+  height: 12px;
   left: 0px;
   top: 0px;
   border-radius: 16px;
-  border: 4px solid #FE5F55;
+  border: 3px solid #000000;
 }
+
 .search-wrapper .close {
   position: absolute;
   z-index: 1;
-  top:24px;
-  right:20px;
-  width:25px;
-  height:25px;
+  top: 20px;
+  right: 15px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
   transform: rotate(-180deg);
   transition: all .3s cubic-bezier(0.285, -0.450, 0.935, 0.110);
   transition-delay: 0.2s;
 }
+
 .search-wrapper.active .close {
-  right:-50px;
+  right: -40px;
   transform: rotate(45deg);
   transition: all .6s cubic-bezier(0.000, 0.105, 0.035, 1.570);
   transition-delay: 0.5s;
 }
-.search-wrapper .close::before, .search-wrapper .close::after {
-  position:absolute;
-  content:'';
-  background: #FE5F55;
+
+.search-wrapper .close::before,
+.search-wrapper .close::after {
+  position: absolute;
+  content: '';
+  background: #ffffff;
   border-radius: 2px;
 }
+
 .search-wrapper .close::before {
-  width: 5px;
-  height: 25px;
-  left: 10px;
+  width: 4px;
+  height: 20px;
+  left: 8px;
   top: 0px;
 }
+
 .search-wrapper .close::after {
-  width: 25px;
-  height: 5px;
+  width: 20px;
+  height: 4px;
   left: 0px;
-  top: 10px;
+  top: 8px;
 }
+
 
 /* Style for the search container */
 #search-container {
@@ -221,21 +238,115 @@
 }
 
 /* Style for the theme toggle button */
-#theme-toggle {
+.switch {
+  font-size: 17px;
   position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 10px 20px;
-  background: #222;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  z-index: 1000; /* Ensure it appears above the map */
+  top: 25px; /* Adjust as needed */
+  right: 10px; /* Move to the right side */
+  z-index: 1000; /* Ensure it stays above the map */
+  display: inline-block;
+  width: 64px;
+  height: 34px;
 }
 
-#theme-toggle:hover {
-  background: #444; /* Slightly lighter background on hover */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #73C0FC;
+  transition: .4s;
+  border-radius: 30px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 30px;
+  width: 30px;
+  border-radius: 20px;
+  left: 2px;
+  bottom: 2px;
+  z-index: 2;
+  background-color: #e8e8e8;
+  transition: .4s;
+}
+
+.sun svg {
+  position: absolute;
+  top: 6px;
+  left: 36px;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+}
+
+.moon svg {
+  fill: #73C0FC;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+}
+
+/* .switch:hover */.sun svg {
+  animation: rotate 15s linear infinite;
+}
+
+@keyframes rotate {
+ 
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* .switch:hover */.moon svg {
+  animation: tilt 5s linear infinite;
+}
+
+@keyframes tilt {
+ 
+  0% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-10deg);
+  }
+
+  75% {
+    transform: rotate(10deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.input:checked + .slider {
+  background-color: #183153;
+}
+
+.input:focus + .slider {
+  box-shadow: 0 0 1px #183153;
+}
+
+.input:checked + .slider:before {
+  transform: translateX(30px);
 }
 
 /* Responsive Design */
@@ -245,12 +356,6 @@
     left: 5%; /* Center it horizontally */
   }
 
-  #theme-toggle {
-    top: 15px;
-    right: 15px;
-    padding: 8px 16px;
-    font-size: 14px;
-  }
 }
 
 
