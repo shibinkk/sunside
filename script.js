@@ -47,3 +47,33 @@ function searchToggle(obj, evt){
           container.find('.search-input').val('');
       }
 }
+
+// Function to locate the user and add a marker
+function locateUser() {
+  if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+      function (position) {
+          var lat = position.coords.latitude;
+          var lng = position.coords.longitude;
+
+          // Set the map view to the user's location
+          map.setView([lat, lng], 13);
+
+          // Add a marker at the user's location
+          L.marker([lat, lng])
+              .addTo(map)
+              .bindPopup("You are here!")
+              .openPopup();
+      },
+      function () {
+          alert("Unable to retrieve your location.");
+      }
+  );
+}
+
+// Attach function to the "Use Current Location" button
+document.getElementById('locate-btn').addEventListener('click', locateUser);
