@@ -36,17 +36,21 @@ window.addEventListener('resize', () => {
 
 
 function searchToggle(obj, evt){
-  var container = $(obj).closest('.search-wrapper');
-      if(!container.hasClass('active')){
-          container.addClass('active');
-          evt.preventDefault();
-      }
-      else if(container.hasClass('active') && $(obj).closest('.input-holder').length == 0){
-          container.removeClass('active');
-          // clear input
-          container.find('.search-input').val('');
-      }
-}
+    var container = $(obj).closest('.search-wrapper');
+    var otherContainer = container.hasClass('second-search') ? $('.search-wrapper').not('.second-search') : $('.second-search');
+    
+    if(!container.hasClass('active')){
+        container.addClass('active');
+        otherContainer.addClass('shift');
+        evt.preventDefault();
+    }
+    else if(container.hasClass('active') && $(obj).closest('.input-holder').length == 0){
+        container.removeClass('active');
+        otherContainer.removeClass('shift');
+        // clear input
+        container.find('.search-input').val('');
+    }
+  }
 
 // Function to locate the user and add a marker
 function locateUser() {

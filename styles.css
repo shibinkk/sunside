@@ -12,12 +12,33 @@
   position: absolute;
   transform: translate(-50%, -50%);
   top: 4.5%;
-  left: 50%;
+  left: 48%; /* Adjusted to bring the wrappers closer */
+  transition: all 0.3s ease-in-out;
+}
+
+.second-search {
+  left: 52%; /* Position the second wrapper closer to the first one */
+}
+
+.search-wrapper.active {
+  left: 40%; /* Adjust position when active */
+}
+
+.second-search.active {
+  left: 60%; /* Adjust position when active */
+}
+
+.search-wrapper.shift {
+  left: 30%; /* Adjust position when the other wrapper is active */
+}
+
+.second-search.shift {
+  left: 70%; /* Adjust position when the other wrapper is active */
 }
 
 .search-wrapper .input-holder {
-  height: 50px; /* Reduced from 70px */
-  width: 50px; /* Reduced from 70px */
+  height: 50px;
+  width: 50px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0);
   border-radius: 100px;
@@ -60,8 +81,8 @@
 }
 
 .search-wrapper .input-holder .search-icon {
-  width: 50px; /* Reduced from 70px */
-  height: 50px; /* Reduced from 70px */
+  width: 50px;
+  height: 50px;
   border: none;
   border-radius: 6px;
   background: #FFF;
@@ -82,7 +103,7 @@
 }
 
 .search-wrapper .input-holder .search-icon span {
-  width: 18px; /* Adjusted to fit smaller button */
+  width: 18px;
   height: 18px;
   display: inline-block;
   vertical-align: middle;
@@ -160,6 +181,8 @@
   left: 0px;
   top: 8px;
 }
+
+
 
 
 /* Style for the search container */
