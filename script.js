@@ -34,23 +34,44 @@ window.addEventListener('resize', () => {
   map.invalidateSize();
 });
 
+function searchToggle(obj, evt) {
+  var container = $(obj).closest('.search-wrapper');
+  var otherContainer = container.hasClass('second-search') 
+    ? $('.search-wrapper').not('.second-search') 
+    : $('.second-search');
 
-function searchToggle(obj, evt){
-    var container = $(obj).closest('.search-wrapper');
-    var otherContainer = container.hasClass('second-search') ? $('.search-wrapper').not('.second-search') : $('.second-search');
-    
-    if(!container.hasClass('active')){
-        container.addClass('active');
-        otherContainer.addClass('shift');
-        evt.preventDefault();
+  evt.preventDefault();
+
+  if (!container.hasClass('active')) {
+    // Close the other wrapper if it's open
+    if (otherContainer.hasClass('active')) {
+      otherContainer.removeClass('active shift-left shift-right');
+      otherContainer.find('.search-input').val('');
     }
-    else if(container.hasClass('active') && $(obj).closest('.input-holder').length == 0){
-        container.removeClass('active');
-        otherContainer.removeClass('shift');
-        // clear input
-        container.find('.search-input').val('');
+
+    // Open the clicked wrapper
+    container.addClass('active');
+
+    // Move the other wrapper
+    if (container.hasClass('second-search')) {
+      otherContainer.addClass('shift-left');  // Move first wrapper left
+    } else {
+      otherContainer.addClass('shift-right'); // Move second wrapper right
+    }
+  } else {
+    // Close the clicked wrapper
+    container.removeClass('active shift-left shift-right');
+    container.find('.search-input').val('');
+
+    // Ensure the other wrapper returns to its original position
+    if (!otherContainer.hasClass('active')) {
+      otherContainer.removeClass('shift-left shift-right');
     }
   }
+}
+
+
+
 
 // Function to locate the user and add a marker
 function locateUser() {

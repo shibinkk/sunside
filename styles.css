@@ -9,31 +9,68 @@
 }
 
 .search-wrapper {
+  display: flex;
   position: absolute;
   transform: translate(-50%, -50%);
   top: 4.5%;
-  left: 48%; /* Adjusted to bring the wrappers closer */
+  left: 48%; /* Initial position for the first wrapper */
   transition: all 0.3s ease-in-out;
+}
+/* Style for the bus icon */
+.bus-icon {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 6px;
+  background: #FFF;
+  padding: 0px;
+  outline: none;
+  position: relative;
+  z-index: 2;
+  float: right;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bus-icon i {
+  font-size: 24px; /* Adjust size as needed */
+  color: #000; /* Black color for the bus icon */
+}
+
+/* Adjust the bus icon when the wrapper is active */
+.search-wrapper.active .bus-icon {
+  width: 40px;
+  height: 40px;
+  margin: 5px;
+  border-radius: 30px;
+}
+
+.search-wrapper.active .bus-icon i {
+  font-size: 20px; /* Adjust size as needed */
 }
 
 .second-search {
-  left: 52%; /* Position the second wrapper closer to the first one */
+  left: 52%; /* Initial position for the second wrapper */
+  transition: left 0.3s ease-in-out; /* Smooth transition for dynamic positioning */
 }
 
 .search-wrapper.active {
-  left: 40%; /* Adjust position when active */
+  left: 40%; /* Position when active */
 }
 
 .second-search.active {
-  left: 60%; /* Adjust position when active */
+  left: 60%; /* Position when active */
 }
 
-.search-wrapper.shift {
-  left: 30%; /* Adjust position when the other wrapper is active */
+.search-wrapper.shift-left {
+  left: 40% !important; /* Move first wrapper left */
 }
 
-.second-search.shift {
-  left: 70%; /* Adjust position when the other wrapper is active */
+.search-wrapper.shift-right {
+  left: 60% !important; /* Move second wrapper right */
 }
 
 .search-wrapper .input-holder {
