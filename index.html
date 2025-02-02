@@ -44,16 +44,18 @@
 
   <div class="search-wrapper">
     <div class="input-holder">
-      <input type="text" class="search-input" placeholder="Type to search" />
-      <button class="search-icon" onclick="searchToggle(this, event);">
-        <span></span>
-      </button>
+        <input type="text" class="search-input" id="search" placeholder="Type to search">
+        <button class="search-icon" onclick="searchToggle(this, event);">
+            <span></span>
+        </button>
     </div>
+    <div class="suggestion-container" id="suggestions"></div> <!-- Added for place suggestions -->
     <span class="close" onclick="searchToggle(this, event);"></span>
-  </div>
+</div>
+
   <div class="search-wrapper second-search">
     <div class="input-holder">
-      <input type="text" class="search-input" placeholder="Type to search" />
+      <input type="text" class="search-input" placeholder="Search bus" />
       <button class="bus-icon" onclick="searchToggle(this, event);">
         <i class="fas fa-bus"></i> <!-- Font Awesome bus icon -->
       </button>
