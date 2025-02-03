@@ -322,12 +322,12 @@
 
 /* Submit button styles */
 #search-container button[type="submit"] {
-  background: #28a745; /* Green color for submit button */
+  background: #1f98df; /* Green color for submit button */
   cursor: pointer;
 }
 
 #search-container button[type="submit"]:hover {
-  background: #218838; /* Darker green on hover */
+  background: #1f7ed6; /* Darker green on hover */
 }
 
 /* Responsive Design */
@@ -340,3 +340,47 @@
 }
 
 
+/* Style for input holders in the search container */
+#search-container .input-holder {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+/* Suggestion container for start and end points */
+#start-suggestions,
+#end-suggestions {
+  position: absolute;
+  top: 40px;
+  width: 100%;
+  background: rgba(20, 20, 20, 0.95);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  max-height: 250px;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
+}
+
+#start-suggestions.active,
+#end-suggestions.active {
+  display: block;
+}
+
+#start-suggestions .suggestion-item,
+#end-suggestions .suggestion-item {
+  padding: 12px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#start-suggestions .suggestion-item:last-child,
+#end-suggestions .suggestion-item:last-child {
+  border-bottom: none;
+}
+
+#start-suggestions .suggestion-item:hover,
+#end-suggestions .suggestion-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+}

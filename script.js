@@ -102,134 +102,229 @@ function searchToggle(obj, evt) {
 
 // // Attach function to the "Use Current Location" button
 // document.getElementById('locate-btn').addEventListener('click', locateUser);
+// Constants for DOM elements
+// Constants for DOM elements
 
+
+// Constants for DOM elements
 const searchInput = document.getElementById("search");
-const searchIcon = document.querySelector(".search-icon");
+const startInput = document.getElementById("start-point");
+const endInput = document.getElementById("end-point");
 const suggestionBox = document.getElementById("suggestions");
+const startSuggestions = document.getElementById("start-suggestions");
+const endSuggestions = document.getElementById("end-suggestions");
+const searchIcon = document.querySelector(".search-icon");
 const searchWrapper = document.querySelector(".search-wrapper");
 
 let currentMarker = null; // Store the current marker
 
-// Function to fetch and show place suggestions using Nominatim OSM
-searchInput.addEventListener("input", async function () {
-    let query = this.value.trim();
-    if (query.length < 2) {
-        suggestionBox.innerHTML = "";
-        suggestionBox.classList.remove("active");
-        return;
-    }
+// Function to set current date and time
+function setCurrentDateTime() {
+  const dateInput = document.getElementById("date");
+  const timeInput = document.getElementById("time");
 
-    try {
-        let response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&addressdetails=1`);
-        let data = await response.json();
+  // Get current date and time
+  const now = new Date();
 
-        suggestionBox.innerHTML = ""; // Clear previous suggestions
-        if (data.length === 0) {
-            suggestionBox.classList.remove("active");
-            return;
-        }
+  // Format date as YYYY-MM-DD (required for input type="date")
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+  const day = String(now.getDate()).padStart(2, "0");
+  const formattedDate = `${year}-${month}-${day}`;
 
-        data.slice(0, 5).forEach(place => {
-            // Create a simplified address (only city, state, country)
-            const simpleAddress = `${place.address.city || place.address.town || place.address.village || place.address.district}, ${place.address.state}, ${place.address.country}`;
-            
-            let div = document.createElement("div");
-            div.classList.add("suggestion-item");
-            div.textContent = simpleAddress;
-            div.onclick = async () => {
-                searchInput.value = simpleAddress;
-                suggestionBox.innerHTML = "";
-                suggestionBox.classList.remove("active");
+  // Format time as HH:MM (required for input type="time")
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const formattedTime = `${hours}:${minutes}`;
 
-                // Move the map to the selected place
-                await locatePlace(place.lat, place.lon, simpleAddress);
-            };
-            suggestionBox.appendChild(div);
-        });
-
-        suggestionBox.classList.add("active");
-
-    } catch (error) {
-        console.error("Error fetching places:", error);
-    }
-});
-
-// Function to search and move the map to the selected location
-async function locatePlace(lat, lon, placeName) {
-    if (!lat || !lon) return;
-
-    // Remove previous marker if exists
-    if (currentMarker) {
-        map.removeLayer(currentMarker);
-    }
-
-    // Add new marker
-    currentMarker = L.marker([lat, lon]).addTo(map).bindPopup(placeName).openPopup();
-
-    // Move the map to the searched location
-    map.setView([lat, lon], 13);
-
-    // Close and clear search
-    closeSearch();
+  // Set default values
+  dateInput.value = formattedDate;
+  timeInput.value = formattedTime;
 }
 
-// Trigger search when pressing "Enter"
-searchInput.addEventListener("keypress", async function (event) {
-    if (event.key === "Enter") {
-        event.preventDefault();
+// Call the function to set default date and time when the page loads
+setCurrentDateTime();
 
-        try {
-            let query = searchInput.value.trim();
-            let response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&addressdetails=1`);
-            let data = await response.json();
+// Function to fetch and show place suggestions using Nominatim OSM
+async function fetchSuggestions(query, suggestionBox, isSearchWrapper = false) {
+  if (query.length < 2) {
+    suggestionBox.innerHTML = "";
+    suggestionBox.classList.remove("active");
+    return;
+  }
 
-            if (data.length > 0) {
-                locatePlace(data[0].lat, data[0].lon, data[0].display_name);
-            }
-        } catch (error) {
-            console.error("Error fetching location:", error);
-        }
+  try {
+    let response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&addressdetails=1`);
+    let data = await response.json();
+
+    suggestionBox.innerHTML = ""; // Clear previous suggestions
+    if (data.length === 0) {
+      suggestionBox.classList.remove("active");
+      return;
     }
-});
 
-// Trigger search when clicking the search icon
-searchIcon.addEventListener("click", async function (event) {
+    data.slice(0, 5).forEach(place => {
+      // Create a simplified address (only city, state, country)
+      const simpleAddress = `${place.address.city || place.address.town || place.address.village || place.address.district}, ${place.address.state}, ${place.address.country}`;
+      
+      let div = document.createElement("div");
+      div.classList.add("suggestion-item");
+      div.textContent = simpleAddress;
+      div.onclick = async () => {
+        suggestionBox.previousElementSibling.value = simpleAddress; // Update input value
+        suggestionBox.innerHTML = "";
+        suggestionBox.classList.remove("active");
+
+        // Only locate and mark the place if it's from the search wrapper
+        if (isSearchWrapper) {
+          await locatePlace(place.lat, place.lon, simpleAddress);
+        }
+      };
+      suggestionBox.appendChild(div);
+    });
+
+    suggestionBox.classList.add("active");
+  } catch (error) {
+    console.error("Error fetching places:", error);
+  }
+}
+
+// Add event listeners for the search inputs
+searchInput.addEventListener("input", () => fetchSuggestions(searchInput.value, suggestionBox, true)); // Search wrapper
+startInput.addEventListener("input", () => fetchSuggestions(startInput.value, startSuggestions)); // Search container
+endInput.addEventListener("input", () => fetchSuggestions(endInput.value, endSuggestions)); // Search container
+
+// Function to search and move the map to the selected location (only for search wrapper)
+async function locatePlace(lat, lon, placeName) {
+  if (!lat || !lon) return;
+
+  // Remove previous marker if exists
+  if (currentMarker) {
+    map.removeLayer(currentMarker);
+  }
+
+  // Add new marker
+  currentMarker = L.marker([lat, lon]).addTo(map).bindPopup(placeName).openPopup();
+
+  // Move the map to the searched location
+  map.setView([lat, lon], 13);
+
+  // Close and clear search
+  closeSearch();
+}
+
+// Trigger search when pressing "Enter" on any input
+function handleEnterKey(event, input, suggestionBox, isSearchWrapper = false) {
+  if (event.key === "Enter") {
     event.preventDefault();
 
     try {
-        let query = searchInput.value.trim();
-        let response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&addressdetails=1`);
-        let data = await response.json();
-
-        if (data.length > 0) {
-            locatePlace(data[0].lat, data[0].lon, data[0].display_name);
+      let query = input.value.trim();
+      fetchSuggestions(query, suggestionBox, isSearchWrapper).then(() => {
+        if (suggestionBox.children.length > 0) {
+          const firstSuggestion = suggestionBox.children[0];
+          input.value = firstSuggestion.textContent;
+          if (isSearchWrapper) {
+            locatePlace(firstSuggestion.dataset.lat, firstSuggestion.dataset.lon, firstSuggestion.textContent);
+          }
         }
+      });
     } catch (error) {
-        console.error("Error fetching location:", error);
+      console.error("Error fetching location:", error);
     }
+  }
+}
+
+searchInput.addEventListener("keypress", (event) => handleEnterKey(event, searchInput, suggestionBox, true)); // Search wrapper
+startInput.addEventListener("keypress", (event) => handleEnterKey(event, startInput, startSuggestions)); // Search container
+endInput.addEventListener("keypress", (event) => handleEnterKey(event, endInput, endSuggestions)); // Search container
+
+// Trigger search when clicking the search icon
+searchIcon.addEventListener("click", async function (event) {
+  event.preventDefault();
+
+  try {
+    let query = searchInput.value.trim();
+    let response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&addressdetails=1`);
+    let data = await response.json();
+
+    if (data.length > 0) {
+      locatePlace(data[0].lat, data[0].lon, data[0].display_name);
+    }
+  } catch (error) {
+    console.error("Error fetching location:", error);
+  }
 });
 
 // Function to clear input and search results when clicking the wrapper again
 searchWrapper.addEventListener("click", function () {
-    searchInput.value = ""; // Clear input
-    suggestionBox.innerHTML = "";
-    suggestionBox.classList.remove("active");
+  searchInput.value = ""; // Clear input
+  suggestionBox.innerHTML = "";
+  suggestionBox.classList.remove("active");
 });
 
 // Function to close search wrapper
 function closeSearch() {
-    searchWrapper.classList.remove("active", "shift-left", "shift-right");
-    searchInput.value = ""; // Clear input after search
-    suggestionBox.innerHTML = "";
-    suggestionBox.classList.remove("active");
+  searchWrapper.classList.remove("active", "shift-left", "shift-right");
+  searchInput.value = ""; // Clear input after search
+  suggestionBox.innerHTML = "";
+  suggestionBox.classList.remove("active");
 }
 
 // Close suggestion box if clicked outside
 document.addEventListener("click", (e) => {
-    if (!searchWrapper.contains(e.target)) {
-        suggestionBox.classList.remove("active");
-    }
+  if (!searchWrapper.contains(e.target)) {
+    suggestionBox.classList.remove("active");
+  }
+  if (!startInput.contains(e.target)) {
+    startSuggestions.classList.remove("active");
+  }
+  if (!endInput.contains(e.target)) {
+    endSuggestions.classList.remove("active");
+  }
 });
 
 
-
+// Function to get current location and fill it into the start-point field
+function getCurrentLocation() {
+    const startInput = document.getElementById("start-point");
+  
+    // Check if Geolocation is supported
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+  
+    // Show loading message or spinner (optional)
+    startInput.placeholder = "Fetching your location...";
+  
+    // Get current position
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+  
+        // Fetch address using Nominatim Reverse Geocoding
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+          .then((response) => response.json())
+          .then((data) => {
+            const address = data.display_name || "Unknown Location";
+            startInput.value = address; // Fill the address into the start-point field
+            startInput.placeholder = "Enter Starting Point"; // Reset placeholder
+          })
+          .catch((error) => {
+            console.error("Error fetching address:", error);
+            startInput.placeholder = "Enter Starting Point"; // Reset placeholder
+            alert("Unable to fetch your location. Please try again.");
+          });
+      },
+      (error) => {
+        console.error("Error getting location:", error);
+        startInput.placeholder = "Enter Starting Point"; // Reset placeholder
+        alert("Unable to fetch your location. Please try again.");
+      }
+    );
+  }
+  
+  // Add event listener to the "Use Current Location" button
+  document.getElementById("locate-btn").addEventListener("click", getCurrentLocation);

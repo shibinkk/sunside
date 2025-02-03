@@ -23,34 +23,40 @@
   <div id="map"></div>
 
   <!-- Search container -->
-  <div id="search-container">
-    <h1>Sit In Shade</h1>
-    <p>Find Best Seat to Minimize Sun Exposure While Traveling</p>
-    <form>
-      <input type="text" placeholder="Enter Starting Point" id="start-point">
-      <input type="text" placeholder="Enter Destination" id="end-point">
-      <label for="date">Date:</label>
-      <input type="date" id="date">
-      <label for="time">Time:</label>
-      <input type="time" id="time">
-      <button type="button" id="locate-btn">Use Current Location</button>
-      <select id="timezone">
-        <option value="UTC+5:30">(UTC+5:30)</option>
-        <option value="UTC">UTC</option>
-      </select>
-      <button type="submit">Submit</button>
-    </form>
-  </div>
-
-  <div class="search-wrapper">
+<div id="search-container">
+  <h1>Sit In Shade</h1>
+  <p>Find Best Seat to Minimize Sun Exposure While Traveling</p>
+  <form>
     <div class="input-holder">
-        <input type="text" class="search-input" id="search" placeholder="Type to search">
-        <button class="search-icon" onclick="searchToggle(this, event);">
-            <span></span>
-        </button>
+      <input type="text" placeholder="Enter Starting Point" id="start-point">
+      <div class="suggestion-container" id="start-suggestions"></div>
     </div>
-    <div class="suggestion-container" id="suggestions"></div> <!-- Added for place suggestions -->
-    <span class="close" onclick="searchToggle(this, event);"></span>
+    <div class="input-holder">
+      <input type="text" placeholder="Enter Destination" id="end-point">
+      <div class="suggestion-container" id="end-suggestions"></div>
+    </div>
+    <label for="date">Date:</label>
+    <input type="date" id="date">
+    <label for="time">Time:</label>
+    <input type="time" id="time">
+    <button type="button" id="locate-btn">Use Current Location</button>
+    <select id="timezone">
+      <option value="UTC+5:30">(UTC+5:30)</option>
+      <option value="UTC">UTC</option>
+    </select>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<div class="search-wrapper">
+  <div class="input-holder">
+    <input type="text" class="search-input" id="search" placeholder="Type to search">
+    <button class="search-icon" onclick="searchToggle(this, event);">
+      <span></span>
+    </button>
+  </div>
+  <div class="suggestion-container" id="suggestions"></div>
+  <span class="close" onclick="searchToggle(this, event);"></span>
 </div>
 
   <div class="search-wrapper second-search">
