@@ -328,3 +328,39 @@ function getCurrentLocation() {
   
   // Add event listener to the "Use Current Location" button
   document.getElementById("locate-btn").addEventListener("click", getCurrentLocation);
+
+  // Save recent searches
+function saveRecentSearch(query) {
+  let recentSearches = JSON.parse(localStorage.getItem("recentSearches")) || [];
+  if (!recentSearches.includes(query)) {
+    recentSearches.unshift(query); // Add to the beginning of the array
+    if (recentSearches.length > 5) {
+      recentSearches.pop(); // Keep only the last 5 searches
+    }
+    localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
+  }
+}
+
+// Display recent searches
+function displayRecentSearches(suggestionBox) {
+  let recentSearches = JSON.parse(localStorage.getItem("recentSearches")) || [];
+  suggestionBox.innerHTML = ""; // Clear previous suggestions
+
+  recentSearches.forEach((search) => {
+    let div = document.createElement("div");
+    div.classList.add("suggestion-item");
+    div.textContent = search;
+    div.onclick = () => {
+      suggestionBox.previousElementSibling.value = search;
+      suggestionBox.innerHTML = "";
+      suggestionBox.classList.remove("active");
+    };
+    suggestionBox.appendChild(div);
+  });
+
+  suggestionBox.classList.add("active");
+}
+
+// Call this function when the input is focused
+startInput.addEventListener("focus", () => displayRecentSearches(startSuggestions));
+endInput.addEventListener("focus", () => displayRecentSearches(endSuggestions));
