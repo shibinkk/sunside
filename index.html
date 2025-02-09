@@ -6,6 +6,17 @@
   <title>Sit In Shade</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="toggle.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
+<script src="sunexp.js"></script> <!-- Your script file -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-polyline@1.0.0/leaflet.polyline.min.js"></script>
+<script src="https://unpkg.com/leaflet-polyline-encoded"></script>
+
+
+
+
+
   <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -18,6 +29,28 @@
 </head>
 <body>
 
+  <div id="results-panel">
+    <div class="results-content">
+      <h2>Journey Analysis</h2>
+      <div class="results-grid">
+        <div class="result-item">
+          <label>Preferred Side:</label>
+          <span id="preferred-side">--</span>
+        </div>
+        <div class="result-item">
+          <label>Sun Exposure:</label>
+          <div class="sun-percentages">
+            <span>Left: <span id="left-percent">--%</span></span>
+            <span>Right: <span id="right-percent">--%</span></span>
+          </div>
+        </div>
+        <div class="result-item">
+          <label>Distance/Time:</label>
+          <span id="distance-time">--</span>
+        </div>
+      </div>
+    </div>
+  </div>
   
   <!-- Map container -->
   <div id="map"></div>
@@ -47,6 +80,7 @@
     <button type="submit">Submit</button>
   </form>
 </div>
+
 
 <div class="search-wrapper">
   <div class="input-holder">
