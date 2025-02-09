@@ -389,7 +389,7 @@
 #results-panel {
   display: none;  /* Hidden by default */
   position: fixed;
-  top: 20px;
+  top: 70px;
   right: 20px;
   width: 300px;
   background-color: rgba(0, 0, 0, 0.7);  /* Semi-transparent black */

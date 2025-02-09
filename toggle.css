@@ -3,7 +3,7 @@
 .switch {
 	font-size: 17px;
 	position: absolute;
-	top: 25px; /* Adjust as needed */
+	top: 15px; /* Adjust as needed */
 	right: 10px; /* Move to the right side */
 	z-index: 1000; /* Ensure it stays above the map */
 	display: inline-block;
