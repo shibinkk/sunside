@@ -13,57 +13,57 @@
 </head>
 <body>
   <!-- Single Results Panel -->
-  <div id="results-panel">
-    <div class="results-content">
-      <h2>Journey Analysis</h2>
-      <div class="results-grid">
-        <div class="result-item">
-          <label>Preferred Side:</label>
-          <span id="preferred-side">--</span>
+<div id="results-panel">
+  <div class="results-content">
+    <h2>Journey Analysis</h2>
+    <div class="results-grid">
+      <div class="result-item">
+        <label>Preferred Side:</label>
+        <span id="preferred-side">--</span>
+      </div>
+      <div class="result-item">
+        <label>Sun Exposure:</label>
+        <div class="sun-percentages">
+          <span>Left: <span id="left-percent">--%</span></span>
+          <span>Right: <span id="right-percent">--%</span></span>
         </div>
-        <div class="result-item">
-          <label>Sun Exposure:</label>
-          <div class="sun-percentages">
-            <span>Left: <span id="left-percent">--%</span></span>
-            <span>Right: <span id="right-percent">--%</span></span>
-          </div>
-        </div>
-        <div class="result-item">
-          <label>Distance/Time:</label>
-          <span id="distance-time">--</span>
-        </div>
+      </div>
+      <div class="result-item">
+        <label>Distance/Time:</label>
+        <span id="distance-time">--</span>
       </div>
     </div>
   </div>
-  
-  <!-- Map container -->
-  <div id="map"></div>
+</div>
 
-  <!-- Search container -->
-  <div id="search-container">
-    <h1>Sit In Shade</h1>
-    <p>Find Best Seat to Minimize Sun Exposure While Traveling</p>
-    <form id="route-form">
-      <div class="input-holder">
-        <input type="text" placeholder="Enter Starting Point" id="start-point">
-        <div class="suggestion-container" id="start-suggestions"></div>
-      </div>
-      <div class="input-holder">
-        <input type="text" placeholder="Enter Destination" id="end-point">
-        <div class="suggestion-container" id="end-suggestions"></div>
-      </div>
-      <label for="date">Date:</label>
-      <input type="date" id="date">
-      <label for="time">Time:</label>
-      <input type="time" id="time">
-      <button type="button" id="locate-btn">Use Current Location</button>
-      <select id="timezone">
-        <option value="UTC+5:30">(UTC+5:30)</option>
-        <option value="UTC">UTC</option>
-      </select>
-      <button type="submit">Submit</button>
-    </form>
-  </div>
+<!-- Map container -->
+<div id="map"></div>
+
+<!-- Search container -->
+<div id="search-container">
+  <h1>Sit In Shade</h1>
+  <p>Find Best Seat to Minimize Sun Exposure While Traveling</p>
+  <form id="route-form">
+    <div class="input-holder">
+      <input type="text" placeholder="Enter Starting Point" id="start-point">
+      <div class="suggestion-container" id="start-suggestions"></div>
+    </div>
+    <div class="input-holder">
+      <input type="text" placeholder="Enter Destination" id="end-point">
+      <div class="suggestion-container" id="end-suggestions"></div>
+    </div>
+    <label for="date">Date:</label>
+    <input type="date" id="date">
+    <label for="time">Time:</label>
+    <input type="time" id="time">
+    <button type="button" id="locate-btn">Use Current Location</button>
+    <select id="timezone">
+      <option value="UTC+5:30">(UTC+5:30)</option>
+      <option value="UTC">UTC</option>
+    </select>
+    <button type="submit">Submit</button>
+  </form>
+</div>
 
   <!-- Search wrappers -->
   <div class="search-wrapper">

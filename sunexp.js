@@ -26,20 +26,193 @@ function calculateBearing(start, end) {
 
 // Calculate sun's relative position to route
 function calculateSunPosition(routeBearing, sunAzimuth) {
-    const relativeBearing = (sunAzimuth - routeBearing + 360) % 360;
+    // Calculate the relative angle between sun and route direction
+    let relativeAngle = (sunAzimuth - routeBearing + 360) % 360;
+    
+    // Determine if sun is on left or right side
+    const isLeft = relativeAngle > 180;
+    
+    // Normalize the angle to 0-180 range for exposure calculation
+    if (relativeAngle > 180) {
+        relativeAngle = 360 - relativeAngle;
+    }
+    
     return {
-        isLeft: relativeBearing > 180,
-        angle: Math.min(relativeBearing, 360 - relativeBearing)
+        isLeft,
+        angle: relativeAngle
     };
 }
 
 // Calculate exposure factor based on sun angle
-function calculateExposureFactor(angle) {
+function calculateExposureFactor(angle, altitude) {
+    // Normalize angle to 0-90 range
     const normalizedAngle = Math.min(90, angle);
-    return Math.cos(toRad(normalizedAngle));
+    
+    // Factor in both the horizontal angle and sun altitude
+    // This gives more weight to times when the sun is higher in the sky
+    const altitudeFactor = Math.sin(toRad(altitude));
+    const angleFactor = Math.cos(toRad(normalizedAngle));
+    
+    return altitudeFactor * angleFactor;
 }
 
-// Decode polyline
+// Get route from OSRM
+async function getRoute(start, end) {
+    const url = `https://router.project-osrm.org/route/v1/driving/${start.lon},${start.lat};${end.lon},${end.lat}?overview=full&geometries=polyline`;
+    
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (!data.routes || data.routes.length === 0) {
+            throw new Error('No route found');
+        }
+
+        const route = data.routes[0];
+        const coordinates = decodePolyline(route.geometry);
+        
+        return {
+            coordinates,
+            distance: route.distance / 1000, // Convert to km
+            duration: route.duration / 3600  // Convert to hours
+        };
+    } catch (error) {
+        console.error('Routing error:', error);
+        throw new Error('Failed to get route');
+    }
+}
+
+// Main function to calculate sun analysis
+async function calculateSunAnalysis(start, end, dateTime) {
+    // Get actual road route
+    const route = await getRoute(start, end);
+    const segments = route.coordinates;
+    
+    let leftExposure = 0;
+    let rightExposure = 0;
+    let totalSegments = 0;
+
+    // Calculate exposure for each segment
+    for (let i = 0; i < segments.length - 1; i++) {
+        const currentSegment = {
+            lat: segments[i][0],
+            lon: segments[i][1]
+        };
+        const nextSegment = {
+            lat: segments[i + 1][0],
+            lon: segments[i + 1][1]
+        };
+        
+        // Calculate sun position for current segment
+        const sunPosition = SunCalc.getPosition(
+            dateTime,
+            currentSegment.lat,
+            currentSegment.lon
+        );
+
+        // Convert altitude and azimuth to degrees
+        const sunAltitude = toDeg(sunPosition.altitude);
+        const sunAzimuth = (toDeg(sunPosition.azimuth) + 360) % 360;
+
+        // Skip if sun is below horizon
+        if (sunAltitude <= 0) continue;
+
+        // Calculate route bearing for current segment
+        const routeBearing = calculateBearing(currentSegment, nextSegment);
+        
+        // Get sun's relative position
+        const relativePosition = calculateSunPosition(routeBearing, sunAzimuth);
+        
+        // Calculate exposure factor
+        const exposureFactor = calculateExposureFactor(relativePosition.angle, sunAltitude);
+
+        // Add to appropriate side
+        if (relativePosition.isLeft) {
+            leftExposure += exposureFactor;
+        } else {
+            rightExposure += exposureFactor;
+        }
+        
+        totalSegments++;
+    }
+
+    // Prevent division by zero and normalize exposures
+    if (totalSegments === 0) {
+        totalSegments = 1;
+    }
+
+    // Calculate average exposure for each side
+    leftExposure = leftExposure / totalSegments;
+    rightExposure = rightExposure / totalSegments;
+
+    // Convert to percentages
+    const total = leftExposure + rightExposure;
+    const leftPercent = total > 0 ? Math.round((leftExposure / total) * 100) : 50;
+    const rightPercent = total > 0 ? Math.round((rightExposure / total) * 100) : 50;
+
+    // Draw route on map
+    if (window.map) {
+        // Clear existing routes
+        map.eachLayer((layer) => {
+            if (layer instanceof L.Polyline) {
+                map.removeLayer(layer);
+            }
+        });
+
+        // Draw new route
+        L.polyline(segments, {
+            color: '#3388ff',
+            weight: 5,
+            opacity: 0.7
+        }).addTo(map);
+
+        // Add markers for start and end points
+        L.marker([start.lat, start.lon]).addTo(map)
+            .bindPopup('Start');
+        L.marker([end.lat, end.lon]).addTo(map)
+            .bindPopup('End');
+
+        // Fit map to show entire route
+        map.fitBounds(segments);
+    }
+
+    // Determine preferred side based on exposure
+    const preferredSide = leftExposure <= rightExposure ? "Left Side" : "Right Side";
+
+    // Update results panel
+    updateResultsPanel({
+        preferredSide,
+        leftPercent,
+        rightPercent,
+        distance: Math.round(route.distance),
+        duration: Math.round(route.duration * 10) / 10
+    });
+
+    return {
+        preferredSide,
+        leftPercent,
+        rightPercent,
+        distance: Math.round(route.distance),
+        duration: Math.round(route.duration * 10) / 10
+    };
+}
+
+// Update results panel function
+function updateResultsPanel(results) {
+    try {
+        document.getElementById('preferred-side').textContent = results.preferredSide;
+        document.getElementById('left-percent').textContent = `${results.leftPercent}%`;
+        document.getElementById('right-percent').textContent = `${results.rightPercent}%`;
+        document.getElementById('distance-time').textContent = 
+            `${results.distance} km / ${results.duration} hrs`;
+
+        document.getElementById('results-panel').classList.add('visible');
+    } catch (error) {
+        console.error('Error updating results panel:', error);
+    }
+}
+
+// Polyline decoder function
 function decodePolyline(str, precision = 5) {
     let index = 0,
         lat = 0,
@@ -82,122 +255,4 @@ function decodePolyline(str, precision = 5) {
     }
 
     return coordinates;
-}
-
-// Get route from OSRM
-async function getRoute(start, end) {
-    const url = `https://router.project-osrm.org/route/v1/driving/${start.lon},${start.lat};${end.lon},${end.lat}?overview=full&geometries=polyline`;
-    
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if (!data.routes || data.routes.length === 0) {
-            throw new Error('No route found');
-        }
-
-        const route = data.routes[0];
-        const coordinates = decodePolyline(route.geometry);
-        
-        return {
-            coordinates,
-            distance: route.distance / 1000, // Convert to km
-            duration: route.duration / 3600  // Convert to hours
-        };
-    } catch (error) {
-        console.error('Routing error:', error);
-        throw new Error('Failed to get route');
-    }
-}
-
-// Main function to calculate sun analysis
-async function calculateSunAnalysis(start, end, dateTime) {
-    // Get actual road route
-    const route = await getRoute(start, end);
-    const segments = route.coordinates;
-    
-    let leftExposure = 0;
-    let rightExposure = 0;
-    let totalSegments = segments.length - 1;
-
-    // Calculate exposure for each segment
-    for (let i = 0; i < totalSegments; i++) {
-        const currentSegment = {
-            lat: segments[i][0],
-            lon: segments[i][1]
-        };
-        const nextSegment = {
-            lat: segments[i + 1][0],
-            lon: segments[i + 1][1]
-        };
-        
-        // Calculate sun position for current segment
-        const sunPosition = SunCalc.getPosition(
-            dateTime,
-            currentSegment.lat,
-            currentSegment.lon
-        );
-
-        // Convert altitude and azimuth to degrees
-        const sunAltitude = toDeg(sunPosition.altitude);
-        const sunAzimuth = (toDeg(sunPosition.azimuth) + 360) % 360;
-
-        // Skip if sun is below horizon
-        if (sunAltitude <= 0) continue;
-
-        // Calculate route bearing for current segment
-        const routeBearing = calculateBearing(currentSegment, nextSegment);
-        
-        // Get sun's relative position
-        const relativePosition = calculateSunPosition(routeBearing, sunAzimuth);
-        
-        // Calculate exposure factor
-        const exposureFactor = calculateExposureFactor(relativePosition.angle) * (sunAltitude / 90);
-
-        // Add to appropriate side
-        if (relativePosition.isLeft) {
-            leftExposure += exposureFactor;
-        } else {
-            rightExposure += exposureFactor;
-        }
-    }
-
-    // Normalize exposure values to percentages
-    const totalExposure = leftExposure + rightExposure;
-    const leftPercent = Math.round((leftExposure / totalExposure) * 100);
-    const rightPercent = Math.round((rightExposure / totalExposure) * 100);
-
-    // Draw route on map
-    if (window.map) {
-        // Clear existing routes
-        map.eachLayer((layer) => {
-            if (layer instanceof L.Polyline) {
-                map.removeLayer(layer);
-            }
-        });
-
-        // Draw new route
-        L.polyline(segments, {
-            color: '#3388ff',
-            weight: 5,
-            opacity: 0.7
-        }).addTo(map);
-
-        // Add markers for start and end points
-        L.marker([start.lat, start.lon]).addTo(map)
-            .bindPopup('Start');
-        L.marker([end.lat, end.lon]).addTo(map)
-            .bindPopup('End');
-
-        // Fit map to show entire route
-        map.fitBounds(segments);
-    }
-
-    return {
-        preferredSide: leftExposure < rightExposure ? "Left Side" : "Right Side",
-        leftPercent,
-        rightPercent,
-        distance: Math.round(route.distance),
-        duration: Math.round(route.duration * 10) / 10
-    };
 }
