@@ -1,42 +1,57 @@
 document.getElementById("route-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-  
-    const start = document.getElementById("start-point").value;
-    const end = document.getElementById("end-point").value;
-    const date = document.getElementById("date").value;
-    const time = document.getElementById("time").value;
-  
-    if (!start || !end || !date || !time) {
-      alert("Please fill in all fields.");
-      return;
-    }
-  
+  e.preventDefault();
+
+  // Show the loader and blur the screen
+  const loaderOverlay = document.getElementById("loader-overlay");
+  loaderOverlay.classList.add("show");
+
+  const start = document.getElementById("start-point").value;
+  const end = document.getElementById("end-point").value;
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+
+  if (!start || !end || !date || !time) {
+    alert("Please fill in all fields.");
+    loaderOverlay.classList.remove("show"); // Hide the loader
+    return;
+  }
+
+  try {
     // Geocode start and end points
     const startCoords = await geocodeAddress(start);
     const endCoords = await geocodeAddress(end);
-  
+
     if (!startCoords || !endCoords) {
       alert("Could not find coordinates for the entered locations.");
+      loaderOverlay.hidden = true; // Hide the loader
       return;
     }
-  
+
     // Fetch route and calculate sun exposure
     const route = await fetchRoute(startCoords, endCoords);
     if (!route) {
       alert("Could not fetch route.");
+      loaderOverlay.hidden = true; // Hide the loader
       return;
     }
-  
+
     const sunExposure = await calculateSunExposure(route, date, time);
     if (!sunExposure) {
       alert("Could not calculate sun exposure.");
+      loaderOverlay.hidden = true; // Hide the loader
       return;
     }
-  
+
     // Display route and sun exposure data
     displayRoute(route);
     displayRouteInfo(route.distance, route.duration, sunExposure);
-  });
+  } catch (error) {
+    alert("Error calculating route: " + error.message);
+  } finally {
+    // Hide the loader after the data is loaded
+    loaderOverlay.classList.remove("show");
+  }
+});
   
   async function fetchRoute(startCoords, endCoords) {
     const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${startCoords.lon},${startCoords.lat};${endCoords.lon},${endCoords.lat}?overview=full&geometries=geojson`;
