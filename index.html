@@ -24,10 +24,12 @@
     <div class="input-holder">
       <input type="text" placeholder="Enter Starting Point" id="start-point">
       <div class="suggestion-container" id="start-suggestions"></div>
+      <i class="fas fa-times clear-icon" id="clear-start"></i>
     </div>
     <div class="input-holder">
       <input type="text" placeholder="Enter Destination" id="end-point">
       <div class="suggestion-container" id="end-suggestions"></div>
+      <i class="fas fa-times clear-icon" id="clear-end"></i>
     </div>
     <label for="date">Date:</label>
     <input type="date" id="date">
@@ -68,11 +70,38 @@
     <span class="slider"></span>
   </label>
 
-  <!-- Add this above the map container -->
-<div id="route-info" style="position: absolute; top: 10px; left: 10px; z-index: 1000; background: rgba(255, 255, 255, 0.9); padding: 10px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-  <p><strong>Distance:</strong> <span id="distance">-</span></p>
-  <p><strong>Time:</strong> <span id="time-taken">-</span></p>
-  <p><strong>Sun Exposure:</strong> <span id="sun-exposure">-</span></p>
+<!-- Add this above the map container -->
+<div id="route-info" class="route-info" hidden>
+  <div class="results-content">
+    <h2>Journey Analysis</h2>
+    <div class="results-grid">
+      <div class="result-item">
+        <label>Preferred Side:</label>
+        <span id="preferred-side">-</span>
+      </div>
+      <div class="result-item">
+        <label>Sun Exposure:</label>
+        <div class="sun-percentages">
+          <span>
+            <div class="label">Left</div>
+            <div class="value" id="left-exposure">-</div>
+          </span>
+          <span>
+            <div class="label">Right</div>
+            <div class="value" id="right-exposure">-</div>
+          </span>
+          <span>
+            <div class="label">None</div>
+            <div class="value" id="none-exposure">-</div>
+          </span>
+        </div>
+      </div>
+      <div class="result-item">
+        <label>Distance/Time:</label>
+        <span id="distance-time">-</span>
+      </div>
+    </div>
+  </div>
 </div>
 
   <!-- Scripts - Correct loading order is important -->
@@ -80,5 +109,6 @@
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.min.js"></script>
   <script src="script.js"></script>
+  <script src="sunexp.js"></script>
 </body>
 </html>

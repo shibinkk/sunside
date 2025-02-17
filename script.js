@@ -282,162 +282,27 @@ async function geocodeAddress(address) {
   }
 }
 
-
-document.getElementById("route-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const start = document.getElementById("start-point").value;
-  const end = document.getElementById("end-point").value;
-  const date = document.getElementById("date").value;
-  const time = document.getElementById("time").value;
-
-  if (!start || !end || !date || !time) {
-    alert("Please fill in all fields.");
-    return;
-  }
-
-  // Geocode start and end points
-  const startCoords = await geocodeAddress(start);
-  const endCoords = await geocodeAddress(end);
-
-  if (!startCoords || !endCoords) {
-    alert("Could not find coordinates for the entered locations.");
-    return;
-  }
-
-  // Fetch route and calculate sun exposure
-  const route = await fetchRoute(startCoords, endCoords);
-  if (!route) {
-    alert("Could not fetch route.");
-    return;
-  }
-
-  const sunExposure = await calculateSunExposure(route, date, time);
-  if (!sunExposure) {
-    alert("Could not calculate sun exposure.");
-    return;
-  }
-
-  // Display route and sun exposure data
-  displayRoute(route);
-  displayRouteInfo(route.distance, route.duration, sunExposure);
+// Clear start input field
+document.getElementById("clear-start").addEventListener("click", function () {
+  document.getElementById("start-point").value = ""; // Clear the input
+  this.style.display = "none"; // Hide the cross icon
 });
 
-async function fetchRoute(startCoords, endCoords) {
-  const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${startCoords.lon},${startCoords.lat};${endCoords.lon},${endCoords.lat}?overview=full&geometries=geojson`;
+// Clear end input field
+document.getElementById("clear-end").addEventListener("click", function () {
+  document.getElementById("end-point").value = ""; // Clear the input
+  this.style.display = "none"; // Hide the cross icon
+});
 
-  try {
-    const response = await fetch(osrmUrl);
-    const data = await response.json();
+// Show/hide cross icons based on input value
+document.getElementById("start-point").addEventListener("input", function () {
+  const clearIcon = document.getElementById("clear-start");
+  clearIcon.style.display = this.value ? "block" : "none"; // Show/hide based on input value
+});
 
-    if (data.routes && data.routes.length > 0) {
-      const route = data.routes[0];
-      return {
-        distance: route.distance, // Distance in meters
-        duration: route.duration, // Duration in seconds
-        coordinates: route.geometry.coordinates, // Route coordinates
-      };
-    } else {
-      throw new Error("No route found.");
-    }
-  } catch (error) {
-    console.error("Error fetching route:", error);
-    return null;
-  }
-}
+document.getElementById("end-point").addEventListener("input", function () {
+  const clearIcon = document.getElementById("clear-end");
+  clearIcon.style.display = this.value ? "block" : "none"; // Show/hide based on input value
+});
 
-async function calculateSunExposure(route, date, time) {
-  const coordinates = route.coordinates;
-
-  // Create startTime without timezone
-  const startTime = new Date(`${date}T${time}:00`);
-  console.log("Start Time:", startTime); // Debugging
-
-  if (isNaN(startTime.getTime())) {
-    console.error("Invalid start time:", startTime);
-    return null;
-  }
-
-  let leftExposure = 0;
-  let rightExposure = 0;
-  let noExposure = 0;
-
-  for (let i = 0; i < coordinates.length - 1; i++) {
-    const [lon1, lat1] = coordinates[i];
-    const [lon2, lat2] = coordinates[i + 1];
-
-    // Calculate sun position
-    const sunPos = SunCalc.getPosition(startTime, lat1, lon1);
-    console.log("SunCalc Inputs:", { startTime, lat1, lon1 }); // Debugging
-    console.log("Sun Position:", sunPos); // Debugging
-
-    if (isNaN(sunPos.azimuth)) {
-      console.error("Invalid sun position:", sunPos);
-      return null;
-    }
-
-    const sunAzimuth = (sunPos.azimuth * (180 / Math.PI) + 180); // Convert to degrees and adjust for direction
-    console.log("Sun Azimuth:", sunAzimuth); // Debugging
-
-    // Calculate travel direction (bearing)
-    const travelBearing = calculateBearing(lat1, lon1, lat2, lon2);
-    console.log("Travel Bearing:", travelBearing); // Debugging
-
-    // Calculate the difference between sun azimuth and travel bearing
-    let angleDiff = (sunAzimuth - travelBearing + 360) % 360;
-    console.log("Angle Difference:", angleDiff); // Debugging
-
-    // Determine sun exposure
-    if (angleDiff > 90 && angleDiff < 270) {
-      // Sun is on the left side
-      leftExposure++;
-    } else if (angleDiff < 90 || angleDiff > 270) {
-      // Sun is on the right side
-      rightExposure++;
-    } else {
-      // No sun exposure
-      noExposure++;
-    }
-  }
-
-  const total = leftExposure + rightExposure + noExposure;
-  console.log("Sun Exposure Results:", { leftExposure, rightExposure, noExposure, total }); // Debugging
-  return {
-    left: ((leftExposure / total) * 100).toFixed(2),
-    right: ((rightExposure / total) * 100).toFixed(2),
-    none: ((noExposure / total) * 100).toFixed(2),
-  };
-}
-
-function calculateBearing(lat1, lon1, lat2, lon2) {
-  const dLon = (lon2 - lon1) * (Math.PI / 180);
-  const y = Math.sin(dLon) * Math.cos(lat2 * (Math.PI / 180));
-  const x =
-    Math.cos(lat1 * (Math.PI / 180)) * Math.sin(lat2 * (Math.PI / 180)) -
-    Math.sin(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.cos(dLon);
-  let bearing = (Math.atan2(y, x) * (180 / Math.PI) + 360) % 360;
-  return bearing;
-}
-
-
-let routeLayer = null;
-
-function displayRoute(route) {
-  if (routeLayer) {
-    map.removeLayer(routeLayer);
-  }
-
-  const routeCoordinates = route.coordinates.map(coord => [coord[1], coord[0]]);
-  routeLayer = L.polyline(routeCoordinates, { color: "blue" }).addTo(map);
-
-  // Fit the map to the route bounds
-  const bounds = L.latLngBounds(routeCoordinates);
-  map.fitBounds(bounds);
-}
-
-function displayRouteInfo(distance, duration, sunExposure) {
-  document.getElementById("distance").textContent = `${(distance / 1000).toFixed(2)} km`;
-  document.getElementById("time-taken").textContent = `${(duration / 60).toFixed(2)} mins`;
-  document.getElementById("sun-exposure").textContent = `Left: ${sunExposure.left}%, Right: ${sunExposure.right}%, None: ${sunExposure.none}%`;
-}
 
