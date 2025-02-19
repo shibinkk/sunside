@@ -156,18 +156,104 @@ document.getElementById("route-form").addEventListener("submit", async (e) => {
   
   
   let routeLayer = null;
+  let startMarker = null;
+  let endMarker = null;
   
   function displayRoute(route) {
+    // Remove existing layers
     if (routeLayer) {
       map.removeLayer(routeLayer);
     }
+    if (startMarker) {
+      map.removeLayer(startMarker);
+    }
+    if (endMarker) {
+      map.removeLayer(endMarker);
+    }
   
     const routeCoordinates = route.coordinates.map(coord => [coord[1], coord[0]]);
-    routeLayer = L.polyline(routeCoordinates, { color: "blue" }).addTo(map);
+    
+    // Draw the route
+    routeLayer = L.polyline(routeCoordinates, {
+      color: "#3388ff",
+      weight: 8,
+      opacity: 0.7,
+      lineJoin: "round"
+    }).addTo(map);
   
-    // Fit the map to the route bounds
+    // Get start and end coordinates
+    const startCoords = routeCoordinates[0];
+    const endCoords = routeCoordinates[routeCoordinates.length - 1];
+  
+    // Create custom start marker (red)
+    const startIcon = L.divIcon({
+      className: 'custom-div-icon',
+      html: `
+        <div style="
+          background-color: #ff4444;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          border: 4px solid white;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        "></div>
+      `,
+      iconSize: [32, 32],
+      iconAnchor: [16, 16]
+    });
+  
+    // Create custom end marker (green flag)
+    const endIcon = L.divIcon({
+      className: 'custom-div-icon',
+      html: `
+        <div style="
+          position: relative;
+          width: 24px;
+          height: 24px;
+        ">
+          <div style="
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 24px;
+            background-color: #333;
+          "></div>
+          <div style="
+            position: absolute;
+            left: 4px;
+            top: 2px;
+            width: 20px;
+            height: 16px;
+            background-color: #4CAF50;
+            clip-path: polygon(0 0, 100% 0, 80% 50%, 100% 100%, 0 100%);
+          "></div>
+        </div>
+      `,
+      iconSize: [24, 24],
+      iconAnchor: [4, 24]
+    });
+  
+    // Add markers
+    startMarker = L.marker(startCoords, { 
+      icon: startIcon,
+      zIndexOffset: 1000  // Ensure marker stays on top
+    })
+      .addTo(map)
+      .bindPopup("Start Location");
+  
+    endMarker = L.marker(endCoords, { 
+      icon: endIcon,
+      zIndexOffset: 1000
+    })
+      .addTo(map)
+      .bindPopup("End Location");
+  
+    // Fit map to route bounds
     const bounds = L.latLngBounds(routeCoordinates);
-    map.fitBounds(bounds);
+    map.fitBounds(bounds, {
+      padding: [50, 50]  // Add some padding around the route
+    });
   }
   
   function displayRouteInfo(distance, duration, sunExposure) {
