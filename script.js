@@ -112,7 +112,7 @@ async function fetchSuggestions(query, suggestionBox, isSearchWrapper = false) {
     suggestionBox.innerHTML = "";
 
     if (data.length === 0) {
-      suggestionBox.innerHTML = `<div class="suggestion-item">No Indian locations found</div>`;
+      suggestionBox.innerHTML = `<div class="suggestion-item">No locations found</div>`;
       suggestionBox.classList.add("active");
       return;
     }
@@ -122,23 +122,27 @@ async function fetchSuggestions(query, suggestionBox, isSearchWrapper = false) {
       const placeName = address.city || address.town || address.village || address.neighbourhood || address.locality;
       const district = address.county || address.district;
       const state = address.state;
-      const formattedAddress = `${placeName}${district ? `, ${district}` : ''}, ${state}`;
-
-      const div = document.createElement("div");
-      div.className = "suggestion-item";
-      div.textContent = formattedAddress;
-      div.onclick = () => {
-        const inputField = suggestionBox.previousElementSibling;
-        inputField.value = formattedAddress;
-        suggestionBox.classList.remove("active");
-        
-        if (isSearchWrapper) {
-          locatePlace(place.lat, place.lon, formattedAddress);
-        }
-      };
       
-      suggestionBox.appendChild(div);
+      if (placeName && state) {
+        const formattedAddress = `${placeName}${district ? `, ${district}` : ''}, ${state}`;
+        
+        const div = document.createElement("div");
+        div.className = "suggestion-item";
+        div.textContent = formattedAddress;
+        div.onclick = () => {
+          const inputField = suggestionBox.previousElementSibling;
+          inputField.value = formattedAddress;
+          suggestionBox.classList.remove("active");
+          
+          if (isSearchWrapper) {
+            locatePlace(place.lat, place.lon, formattedAddress);
+          }
+        };
+    
+        suggestionBox.appendChild(div);
+      }
     });
+    
 
     suggestionBox.classList.add("active");
   } catch (error) {
