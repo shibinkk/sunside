@@ -370,7 +370,7 @@
 .route-info {
   display: none; /* Hidden by default */
   position: fixed;
-  top: 70px;
+  top: 60px;
   right: 20px;
   width: 350px;
   background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black */

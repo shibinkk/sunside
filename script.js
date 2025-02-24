@@ -121,7 +121,16 @@ function getCurrentLocation() {
         const district = address.county || address.district;
         const state = address.state;
         
+        // Populate the start point input field
         startInput.value = `${placeName}${district ? `, ${district}` : ''}, ${state}`;
+        
+        // // Optionally, you can also set the map view to the current location
+        // if (currentMarker) map.removeLayer(currentMarker);
+        // currentMarker = L.marker([latitude, longitude])
+        //   .addTo(map)
+        //   .bindPopup("Your Location")
+        //   .openPopup();
+        // map.setView([latitude, longitude], 13);
       } catch (error) {
         console.error("Location error:", error);
         alert("Couldn't fetch location details");
@@ -136,6 +145,11 @@ function getCurrentLocation() {
     }
   );
 }
+
+// Add event listener to the "Use Current Location" button
+document.getElementById("locate-btn").addEventListener("click", function () {
+  getCurrentLocation();
+});
 
 // Constants for DOM elements
 const searchInput = document.getElementById("search");
@@ -300,22 +314,22 @@ document.addEventListener("click", (e) => {
     if (!endInput.contains(e.target)) endSuggestions.classList.remove("active");
 });
 
-// Recent searches handling
-const recentSearches = {
-    get: () => JSON.parse(localStorage.getItem("recentSearches")) || [],
-    save: (query) => {
-        const searches = recentSearches.get().filter(item => item !== query);
-        searches.unshift(query);
-        localStorage.setItem("recentSearches", JSON.stringify(searches.slice(0, 5)));
-    },
-    display: (container) => {
-        const searches = recentSearches.get();
-        container.innerHTML = searches.map(search => `
-            <div class="suggestion-item">${search}</div>
-        `).join("");
-        container.classList.add("active");
-    }
-};
+// // Recent searches handling
+// const recentSearches = {
+//     get: () => JSON.parse(localStorage.getItem("recentSearches")) || [],
+//     save: (query) => {
+//         const searches = recentSearches.get().filter(item => item !== query);
+//         searches.unshift(query);
+//         localStorage.setItem("recentSearches", JSON.stringify(searches.slice(0, 5)));
+//     },
+//     display: (container) => {
+//         const searches = recentSearches.get();
+//         container.innerHTML = searches.map(search => `
+//             <div class="suggestion-item">${search}</div>
+//         `).join("");
+//         container.classList.add("active");
+//     }
+// };
 
 startInput.addEventListener("focus", () => recentSearches.display(startSuggestions));
 endInput.addEventListener("focus", () => recentSearches.display(endSuggestions));
@@ -360,5 +374,4 @@ document.getElementById("end-point").addEventListener("input", function () {
   const clearIcon = document.getElementById("clear-end");
   clearIcon.style.display = this.value ? "block" : "none"; // Show/hide based on input value
 });
-
 

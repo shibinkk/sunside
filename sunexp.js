@@ -1,7 +1,7 @@
 document.getElementById("route-form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // Show the loader and blur the screen
+  // Show the loader
   const loaderOverlay = document.getElementById("loader-overlay");
   loaderOverlay.classList.add("show");
 
@@ -12,7 +12,7 @@ document.getElementById("route-form").addEventListener("submit", async (e) => {
 
   if (!start || !end || !date || !time) {
     alert("Please fill in all fields.");
-    loaderOverlay.classList.remove("show"); // Hide the loader
+    loaderOverlay.classList.remove("show");
     return;
   }
 
@@ -23,7 +23,7 @@ document.getElementById("route-form").addEventListener("submit", async (e) => {
 
     if (!startCoords || !endCoords) {
       alert("Could not find coordinates for the entered locations.");
-      loaderOverlay.hidden = true; // Hide the loader
+      loaderOverlay.hidden = true;
       return;
     }
 
@@ -31,24 +31,25 @@ document.getElementById("route-form").addEventListener("submit", async (e) => {
     const route = await fetchRoute(startCoords, endCoords);
     if (!route) {
       alert("Could not fetch route.");
-      loaderOverlay.hidden = true; // Hide the loader
+      loaderOverlay.hidden = true;
       return;
     }
 
     const sunExposure = await calculateSunExposure(route, date, time);
     if (!sunExposure) {
       alert("Could not calculate sun exposure.");
-      loaderOverlay.hidden = true; // Hide the loader
+      loaderOverlay.hidden = true;
       return;
     }
 
     // Display route and sun exposure data
     displayRoute(route);
     displayRouteInfo(route.distance, route.duration, sunExposure);
+
   } catch (error) {
     alert("Error calculating route: " + error.message);
   } finally {
-    // Hide the loader after the data is loaded
+    // Hide the loader
     loaderOverlay.classList.remove("show");
   }
 });
