@@ -1,3 +1,23 @@
+/* Base styles and reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* Main app container - uses flexbox for responsive layout */
+.app-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
 /* Ensure the map covers the entire screen */
 #map {
   position: absolute;
@@ -8,14 +28,25 @@
   z-index: 0; /* Ensure map is behind other content */
 }
 
+/* ===== Top Search Area ===== */
+.top-search-area {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  z-index: 10;
+}
+
 .search-wrapper {
   display: flex;
-  position: absolute;
-  transform: translate(-50%, -50%);
-  top: 4.5%;
-  left: 48%; /* Initial position for the first wrapper */
+  position: relative;
   transition: all 0.3s ease-in-out;
 }
+
 /* Style for the bus icon */
 .bus-icon {
   width: 50px;
@@ -52,27 +83,6 @@
   font-size: 20px; /* Adjust size as needed */
 }
 
-.second-search {
-  left: 52%; /* Initial position for the second wrapper */
-  transition: left 0.3s ease-in-out; /* Smooth transition for dynamic positioning */
-}
-
-.search-wrapper.active {
-  left: 40%; /* Position when active */
-}
-
-.second-search.active {
-  left: 60%; /* Position when active */
-}
-
-.search-wrapper.shift-left {
-  left: 40% !important; /* Move first wrapper left */
-}
-
-.search-wrapper.shift-right {
-  left: 60% !important; /* Move second wrapper right */
-}
-
 .search-wrapper .input-holder {
   height: 50px;
   width: 50px;
@@ -84,7 +94,7 @@
 }
 
 .search-wrapper.active .input-holder {
-  width: 450px;
+  width: 300px;
   border-radius: 50px;
   background: rgba(0, 0, 0, 0.5);
   transition: all .5s cubic-bezier(0.000, 0.105, 0.035, 1.570);
@@ -219,11 +229,31 @@
   top: 8px;
 }
 
-/* Place Suggestion Container */
+/* ===== Side Panels Container ===== */
+.side-panels-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Allow clicks to pass through to map */
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+.side-panels-container > * {
+  pointer-events: auto; /* Re-enable clicks for children */
+}
+
+/* ===== Place Suggestion Container ===== */
 .suggestion-container {
   position: absolute;
   top: 60px;
-  width: 450px;
+  width: 100%;
+  max-width: 450px;
   background: rgba(20, 20, 20, 0.95);
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -253,22 +283,17 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
-
-
-/* Style for the search container */
+/* ===== Main Search Container ===== */
 #search-container {
-  position: absolute;
-  top: 50%;
-  left: 20px;
-  transform: translateY(-50%);
-  width: 300px;
+  max-width: 350px;
+  width: 100%;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+  background: rgba(0, 0, 0, 0.8);
   color: white;
   border-radius: 10px;
-  z-index: 1000; /* Ensure it appears above the map */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow for elevation */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   font-family: Arial, sans-serif;
+  align-self: center;
 }
 
 /* Heading style inside the container */
@@ -309,39 +334,51 @@
   color: #aaa;
 }
 
+.date-time-container {
+  display: flex;
+  gap: 10px;
+}
+
+.date-time-container > div {
+  flex: 1;
+}
+
+.date-input, .time-input {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 /* Button for current location */
-#current-location {
+#locate-btn {
   background: #17a2b8; /* Teal color for distinction */
   color: white;
   cursor: pointer;
 }
 
-#current-location:hover {
+#locate-btn:hover {
   background: #138496; /* Darker teal on hover */
 }
 
 /* Submit button styles */
 #search-container button[type="submit"] {
-  background: #1f98df; /* Green color for submit button */
+  background: #1f98df; /* Blue color for submit button */
   cursor: pointer;
 }
 
 #search-container button[type="submit"]:hover {
-  background: #1f7ed6; /* Darker green on hover */
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  #search-container {
-    width: 90%; /* Make the container smaller on smaller screens */
-    left: 5%; /* Center it horizontally */
-  }
-
+  background: #1f7ed6; /* Darker blue on hover */
 }
 
 .clear-icon {
   position: absolute;
-  right: 80px; /* Position the icon to the right */
+  right: 10px; /* Position the icon to the right */
   top: 50%;
   transform: translateY(-50%); /* Center vertically */
   cursor: pointer; /* Change cursor to pointer */
@@ -351,7 +388,7 @@
 }
 
 .clear-icon:hover {
-  color: #333; /* Darker color on hover */
+  color: #aaa; /* Lighter color on hover */
 }
 
 .input-holder {
@@ -363,23 +400,19 @@
   display: block;
 }
 
-
-
-/* Style for the route info panel */
-/* Results Panel Styling */
+/* ===== Route Info Panel ===== */
 .route-info {
-  display: none; /* Hidden by default */
-  position: fixed;
-  top: 60px;
-  right: 20px;
-  width: 350px;
+  max-width: 350px;
+  width: 100%;
   background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
   color: rgb(255, 255, 255);
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
   backdrop-filter: blur(5px); /* Adds a blur effect behind the panel */
+  align-self: flex-start;
+  margin-top: 80px;
+  display: none; /* Hidden by default */
 }
 
 .route-info.visible {
@@ -434,7 +467,7 @@
 
 .sun-percentages span .label {
   font-size: 0.9em;
-  color: #00ff44; /* Light blue for labels */
+  color: #00ff44; /* Light green for labels */
 }
 
 .sun-percentages span .value {
@@ -449,4 +482,70 @@
 
 #distance-time {
   color: #ffd700; /* Gold color for distance/time */
+}
+
+/* ===== Media Queries for Responsive Design ===== */
+/* Tablets */
+@media (max-width: 992px) {
+  .top-search-area {
+    flex-wrap: wrap;
+  }
+  
+  .search-wrapper.active .input-holder {
+    width: 250px;
+  }
+  
+  .side-panels-container {
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 80px 20px 20px;
+  }
+  
+  #search-container {
+    max-width: 400px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .route-info {
+    max-width: 400px;
+    width: 100%;
+    margin-top: 0;
+    align-self: center;
+  }
+}
+
+/* Mobile Phones */
+@media (max-width: 576px) {
+  .top-search-area {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .search-wrapper.active .input-holder {
+    width: 200px;
+  }
+  
+  #search-container, 
+  .route-info {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .date-time-container {
+    flex-direction: column;
+  }
+  
+  .button-group button {
+    padding: 12px;
+  }
+  
+  .sun-percentages {
+    flex-direction: column;
+  }
+  
+  .results-content h2 {
+    font-size: 1.3em;
+  }
 }

@@ -177,7 +177,7 @@ document.getElementById("route-form").addEventListener("submit", async (e) => {
     // Draw the route
     routeLayer = L.polyline(routeCoordinates, {
       color: "#3388ff",
-      weight: 8,
+      weight: 5,
       opacity: 0.7,
       lineJoin: "round"
     }).addTo(map);
